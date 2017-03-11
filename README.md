@@ -50,6 +50,16 @@ curl -X POST \
      http://localhost:5000/users
 ```
 
+`/license-plates` registers a license plate for the authenticated user:
+
+```bash
+curl -X POST \
+     -H 'Cookies: {{A valid session cookie}}' \
+     -H 'Content-Type: application/json' \
+     -d '{ "number": "H20 HCL"}' \
+     http://localhost:5000/license-plates
+```
+
 `/login` creates a user session, and returns the user:
 
 ```bash
