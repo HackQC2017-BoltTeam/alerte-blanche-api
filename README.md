@@ -40,7 +40,7 @@ curl http://localhost:5000/version
 
 `/users` registers a new user:
 
-```
+```bash
 curl -X POST \
      -H 'Content-Type: application/json' \
      -d '{ "email": "indidu@lambda.net",
