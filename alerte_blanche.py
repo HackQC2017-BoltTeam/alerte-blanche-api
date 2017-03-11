@@ -1,10 +1,50 @@
 import os
 
+from peewee import CharField
+from peewee import DoesNotExist
+from peewee import Model
+from peewee import PrimaryKeyField
+from peewee import SqliteDatabase
+
 from flask import Flask
 from flask import jsonify
 from flask import request
 from flask import session
 
+
+#
+# Database init
+#
+
+db_name = 'alerte_blanche.db'
+db = SqliteDatabase(db_name)
+
+class BaseModel(Model):
+    class Meta:
+        database = db
+
+class User(BaseModel):
+    id = PrimaryKeyField()
+    first_name = CharField()
+    last_name = CharField()
+    telephone_number = CharField()
+    email = CharField(unique=True)
+
+    def to_json(self):
+        return {
+            'id': self.id,
+            'first_name': self.first_name,
+            'last_name': self.last_name,
+            'telephone_number': self.telephone_number,
+            'email': self.email,
+        }
+
+db.connect()
+db.create_tables([User], safe=True)
+
+#
+# App init
+#
 
 app = Flask(__name__)
 
@@ -12,22 +52,6 @@ app.secret_key = b'\xb5\xf2v\xba\x8d\x1b\x86\xabO\xc9\x8e\x1a<m\x17mC1\xf4<\x18\
 
 FLASK_DEBUG = os.environ.get('FLASK_DEBUG', False)
 
-
-USERS = [{
-    "id": 1,
-    "email": "tartempion@generique.com",
-}, {
-    "id": 2,
-    "email": "individu@lambda.net",
-}]
-
-
-def get_user_id(email):
-    for user in USERS:
-        if user['email'] == email:
-            return user['id']
-    else:
-        return None
 
 @app.route("/version")
 def ping():
@@ -38,13 +62,30 @@ def ping():
     return jsonify(version_dict)
 
 
+@app.route("/users", methods=['POST'])
+def register():
+    email = request.json['email']
+    telephone_number = request.json.get('telephone_number', '')
+    first_name = request.json.get('first_name', '')
+    last_name = request.json.get('last_name', '')
+    user = User(email=email, telephone_number=telephone_number,
+                first_name=first_name, last_name=last_name)
+    user.save()
+    return jsonify(user.to_json())
+
+
 @app.route("/login", methods=['POST'])
 def login():
     """Secure, PCI-compliant login"""
     email = request.json['email']
-    session['email'] = email
-    session['user_id'] = get_user_id(email)
-    return jsonify({'user_id': session['user_id']})
+    try:
+        user = User.get(email=email)
+    except DoesNotExist as e:
+        return ('No such user', 400)
+    else:
+        session['email'] = user.email
+        session['user_id'] = user.id
+        return jsonify(user.to_json())
 
 
 @app.route('/logout', methods=['POST'])
