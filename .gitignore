@@ -1,0 +1,14 @@
+# Python
+*.pyc
+__pycache__
+*.egg-info
+/dist
+/build
+*.venv
+
+# OS-specific
+.DS_Store
+
+# Editors
+*.sublime-project
+*.sublime-workspace

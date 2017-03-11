@@ -1,0 +1,23 @@
+# Python
+*.pyc
+__pycache__
+*.egg-info
+/dist
+/build
+*.venv
+
+# Docker
+Dockerfile
+.dockerignore
+
+# OS-specific
+.DS_Store
+
+# Editors
+*.sublime-project
+*.sublime-workspace
+.idea/
+
+# Repo
+.git
+README.md
