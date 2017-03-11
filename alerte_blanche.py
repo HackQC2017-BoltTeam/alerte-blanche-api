@@ -95,6 +95,10 @@ def register():
     user = User(email=email, telephone_number=telephone_number,
                 first_name=first_name, last_name=last_name)
     user.save()
+    plate_number = request.json.get('plate_number')
+    if plate_number is not None:
+        plate = LicensePlate(user_id=user.id, number=plate_number)
+        plate.save()
     return jsonify(user.to_json())
 
 

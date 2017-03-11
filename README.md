@@ -46,6 +46,7 @@ curl -X POST \
      -d '{ "email": "indidu@lambda.net",
            "first_name": "Tart",
            "last_name": "Empion",
+           "plate_number": "H2O HCL",
            "telephone_number": "555-666-7777" }' \
      http://localhost:5000/users
 ```
