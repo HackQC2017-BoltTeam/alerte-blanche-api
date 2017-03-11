@@ -16,7 +16,7 @@ docker build -t alerte-blanche-api .
 docker run -d \
     -p 5000:5000 \
     --name alerte-blanche \
-    alerte-blanche
+    alerte-blanche-api
 ```
 
 Development mode:
@@ -27,7 +27,7 @@ docker run -d \
     -e FLASK_DEBUG=1 \
     --name alerte-blanche \
     -v $PWD:/usr/src/app \
-    alerte-blanche
+    alerte-blanche-api
 ```
 
 ## API
