@@ -1,7 +1,10 @@
 import os
 
+from functools import wraps
+
 from peewee import CharField
 from peewee import DoesNotExist
+from peewee import ForeignKeyField
 from peewee import Model
 from peewee import PrimaryKeyField
 from peewee import SqliteDatabase
@@ -37,10 +40,22 @@ class User(BaseModel):
             'last_name': self.last_name,
             'telephone_number': self.telephone_number,
             'email': self.email,
+            'plates': [p.to_json() for p in self.plates]
+        }
+
+class LicensePlate(BaseModel):
+    id = PrimaryKeyField()
+    number = CharField()
+    user_id = ForeignKeyField(User, related_name='plates')
+
+    def to_json(self):
+        return {
+            'id': self.id,
+            'number': self.number,
         }
 
 db.connect()
-db.create_tables([User], safe=True)
+db.create_tables([User, LicensePlate], safe=True)
 
 #
 # App init
@@ -52,6 +67,15 @@ app.secret_key = b'\xb5\xf2v\xba\x8d\x1b\x86\xabO\xc9\x8e\x1a<m\x17mC1\xf4<\x18\
 
 FLASK_DEBUG = os.environ.get('FLASK_DEBUG', False)
 
+
+def login_required(func):
+    @wraps(func)
+    def inner(*args, **kwargs):
+        print(session.get('user_id'))
+        if not session.get('user_id'):
+            return ('unauthenticated', 401)
+        return func(*args, **kwargs)
+    return inner
 
 @app.route("/version")
 def version():
@@ -72,6 +96,16 @@ def register():
                 first_name=first_name, last_name=last_name)
     user.save()
     return jsonify(user.to_json())
+
+
+@app.route("/license-plates", methods=['POST'])
+@login_required
+def register_license_plate():
+    user_id = session['user_id']
+    number = request.json['number']
+    plate = LicensePlate(user_id=user_id, number=number)
+    plate.save()
+    return jsonify(plate.to_json())
 
 
 @app.route("/login", methods=['POST'])
