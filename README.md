@@ -37,3 +37,18 @@ docker run -d \
 ```bash
 curl http://localhost:5000/version
 ```
+
+`/login` creates a user session, and returns the user ID:
+
+```bash
+curl -X POST \
+     -H 'Content-Type: application/json' \
+     -d '{"email": "individu@lambda.net","password": "fidelio"}' \
+     http://localhost:5000/login
+```
+
+`/logout` deletes the user session:
+
+```bash
+curl -X POST http://localhost:5000/logout
+```
