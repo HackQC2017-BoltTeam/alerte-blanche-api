@@ -38,7 +38,19 @@ docker run -d \
 curl http://localhost:5000/version
 ```
 
-`/login` creates a user session, and returns the user ID:
+`/users` registers a new user:
+
+```
+curl -X POST \
+     -H 'Content-Type: application/json' \
+     -d '{ "email": "indidu@lambda.net",
+           "first_name": "Tart",
+           "last_name": "Empion",
+           "telephone_number": "555-666-7777" }' \
+     http://localhost:5000/users
+```
+
+`/login` creates a user session, and returns the user:
 
 ```bash
 curl -X POST \
