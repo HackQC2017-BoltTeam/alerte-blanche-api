@@ -30,7 +30,7 @@ def get_user_id(email):
         return None
 
 @app.route("/version")
-def ping():
+def version():
     version_dict = {
         "version": "0.0.1",
         "debug": bool(FLASK_DEBUG),
