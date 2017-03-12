@@ -32,6 +32,14 @@ docker run -d \
     alerte-blanche-api
 ```
 
+## Testing
+
+To run the extensive test suite:
+
+```bash
+python3 -m unittest -v tests.py
+```
+
 ## API
 
 `/version` returns version information:
