@@ -76,11 +76,9 @@ app.secret_key = b'\xb5\xf2v\xba\x8d\x1b\x86\xabO\xc9\x8e\x1a<m\x17mC1\xf4<\x18\
 FLASK_DEBUG = os.environ.get('FLASK_DEBUG', False)
 GCM_API_KEY = os.environ.get('GCM_API_KEY', False)
 
-
 def login_required(func):
     @wraps(func)
     def inner(*args, **kwargs):
-        print(session.get('user_id'))
         if not session.get('user_id'):
             return ('unauthenticated', 401)
         return func(*args, **kwargs)
@@ -141,6 +139,24 @@ def register_auth_token():
     user_id = session['user_id']
     token = request.json['token']
     AuthToken.insert(token=token, user_id=user_id).upsert().execute()
+    return ('', 204)
+
+
+@app.route("/signal", methods=['POST'])
+@login_required
+def signal_license_plate():
+    """Find the user that owns license plate, if any, then notify him."""
+    plate_number = request.json['plate_number']
+    try:
+        plate = LicensePlate.get(number=plate_number)
+        token = plate.user_id.token.get().token
+        r = gcm_push(recipient=token,
+                 title="Attention! Remorquage imminent!",
+                 message="Votre voiture a été repérée en zone de déneigement." +
+                         "Touchez pour afficher les stationnements les plus près.")
+        print(r)
+    except DoesNotExist as e:
+        pass
     return ('', 204)
 
 
