@@ -1,3 +1,4 @@
+import re
 import os
 
 from functools import wraps
@@ -94,6 +95,10 @@ def gcm_push(recipient, title, message):
                       headers=headers, json=payload)
     return r.json()
 
+def normalize_plate_number(plate_number):
+    return re.sub(r'[^a-zA-Z0-9]+', '', plate_number)
+
+
 @app.route("/version")
 def version():
     version_dict = {
@@ -114,6 +119,7 @@ def register():
     user.save()
     plate_number = request.json.get('plate_number')
     if plate_number is not None:
+        plate_number = normalize_plate_number(plate_number)
         plate = LicensePlate(user_id=user.id, number=plate_number)
         plate.save()
     return jsonify(user.to_json())
