@@ -14,7 +14,8 @@ docker build -t alerte-blanche-api .
 
 ```bash
 docker run -d \
-    -p 5000:5000 \
+    -v ~/alerte-blanche/alerte-blanche.db:/usr/src/app/alerte_blanche.db \
+    -p 8080:5000 \
     --name alerte-blanche \
     alerte-blanche-api
 ```
