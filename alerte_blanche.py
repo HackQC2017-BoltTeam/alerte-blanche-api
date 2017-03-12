@@ -168,6 +168,14 @@ def register_license_plate():
     return jsonify(plate.to_json())
 
 
+@app.route("/users/me")
+@login_required
+def get_user():
+    user_id = session['user_id']
+    user = User.get(id=user_id)
+    return jsonify(user.to_json())
+
+
 @app.route("/users/me/token", methods=['PUT'])
 @login_required
 def register_auth_token():
