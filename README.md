@@ -14,7 +14,8 @@ docker build -t alerte-blanche-api .
 
 ```bash
 docker run -d \
-    -p 5000:5000 \
+    -v ~/alerte-blanche/alerte-blanche.db:/usr/src/app/alerte_blanche.db \
+    -p 8080:5000 \
     --name alerte-blanche \
     alerte-blanche-api
 ```
@@ -43,7 +44,7 @@ curl http://localhost:5000/version
 ```bash
 curl -X POST \
      -H 'Content-Type: application/json' \
-     -d '{ "email": "indidu@lambda.net",
+     -d '{ "email": "individu@lambda.net",
            "first_name": "Tart",
            "last_name": "Empion",
            "plate_number": "H2O HCL",
