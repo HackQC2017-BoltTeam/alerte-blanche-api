@@ -2,6 +2,8 @@ import os
 
 from functools import wraps
 
+import requests
+
 from peewee import CharField
 from peewee import DoesNotExist
 from peewee import ForeignKeyField
@@ -66,7 +68,7 @@ app = Flask(__name__)
 app.secret_key = b'\xb5\xf2v\xba\x8d\x1b\x86\xabO\xc9\x8e\x1a<m\x17mC1\xf4<\x18\xbeR\xd1'
 
 FLASK_DEBUG = os.environ.get('FLASK_DEBUG', False)
-
+GCM_API_KEY = os.environ.get('GCM_API_KEY', False)
 
 def login_required(func):
     @wraps(func)
@@ -76,6 +78,15 @@ def login_required(func):
             return ('unauthenticated', 401)
         return func(*args, **kwargs)
     return inner
+
+def gcm_push(recipient, title, message):
+    if not GCM_API_KEY:
+        return None
+    headers = {'Authorization': 'key=' + GCM_API_KEY}
+    payload = {'to': recipient, 'data': {'title': title, 'message': message}}
+    r = requests.post('https://gcm-http.googleapis.com/gcm/send',
+                      headers=headers, json=payload)
+    return r.json()
 
 @app.route("/version")
 def version():
