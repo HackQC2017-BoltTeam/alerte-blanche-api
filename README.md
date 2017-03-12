@@ -44,7 +44,7 @@ curl http://localhost:5000/version
 ```bash
 curl -X POST \
      -H 'Content-Type: application/json' \
-     -d '{ "email": "indidu@lambda.net",
+     -d '{ "email": "individu@lambda.net",
            "first_name": "Tart",
            "last_name": "Empion",
            "plate_number": "H2O HCL",
