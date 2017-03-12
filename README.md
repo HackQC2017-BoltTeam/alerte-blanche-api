@@ -72,6 +72,16 @@ curl -X PUT \
      http://localhost:5000/users/me/token
 ```
 
+`/signal` signals a license plate to inform the car owner:
+
+```bash
+curl -X POST \
+     -H 'Cookies: {{A valid session cookie}}' \
+     -H 'Content-Type: application/json' \
+     -d '{"plate_number": "H20 HCL"}' \
+     http://localhost:5000/signal
+```
+
 `/login` creates a user session, and returns the user:
 
 ```bash

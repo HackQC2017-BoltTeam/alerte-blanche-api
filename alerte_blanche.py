@@ -136,6 +136,24 @@ def register_auth_token():
     return ('', 204)
 
 
+@app.route("/signal", methods=['POST'])
+@login_required
+def signal_license_plate():
+    """Find the user that owns license plate, if any, then notify him."""
+    plate_number = request.json['plate_number']
+    try:
+        plate = LicensePlate.get(number=plate_number)
+        token = plate.user_id.token.get().token
+        r = gcm_push(recipient=token,
+                 title="Attention! Remorquage imminent!",
+                 message="Votre voiture a été repérée en zone de déneigement." +
+                         "Touchez pour afficher les stationnements les plus près.")
+        print(r)
+    except DoesNotExist as e:
+        pass
+    return ('', 204)
+
+
 @app.route("/login", methods=['POST'])
 def login():
     """Secure, PCI-compliant login"""
