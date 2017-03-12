@@ -58,7 +58,7 @@ curl -X POST \
 curl -X POST \
      -H 'Cookies: {{A valid session cookie}}' \
      -H 'Content-Type: application/json' \
-     -d '{ "number": "H20 HCL"}' \
+     -d '{"number": "H20 HCL"}' \
      http://localhost:5000/license-plates
 ```
 
@@ -68,7 +68,7 @@ curl -X POST \
 curl -X PUT \
      -H 'Cookies: {{A valid session cookie}}' \
      -H 'Content-Type: application/json' \
-     -d '{ "token": "thisismytokenandimproudofit"}' \
+     -d '{"token": "thisismytokenandimproudofit"}' \
      http://localhost:5000/users/me/token
 ```
 
