@@ -54,8 +54,13 @@ class LicensePlate(BaseModel):
             'number': self.number,
         }
 
+class AuthToken(BaseModel):
+    id = PrimaryKeyField()
+    token = CharField()
+    user_id = ForeignKeyField(User, unique=True, related_name='token')
+
 db.connect()
-db.create_tables([User, LicensePlate], safe=True)
+db.create_tables([User, LicensePlate, AuthToken], safe=True)
 
 #
 # App init
@@ -110,6 +115,15 @@ def register_license_plate():
     plate = LicensePlate(user_id=user_id, number=number)
     plate.save()
     return jsonify(plate.to_json())
+
+
+@app.route("/users/me/token", methods=['PUT'])
+@login_required
+def register_auth_token():
+    user_id = session['user_id']
+    token = request.json['token']
+    AuthToken.insert(token=token, user_id=user_id).upsert().execute()
+    return ('', 204)
 
 
 @app.route("/login", methods=['POST'])
