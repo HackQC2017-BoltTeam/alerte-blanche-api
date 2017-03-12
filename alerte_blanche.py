@@ -1,12 +1,15 @@
-import re
+import datetime
 import os
+import re
 
 from functools import wraps
 
 import requests
 
 from peewee import CharField
+from peewee import DateTimeField
 from peewee import DoesNotExist
+from peewee import DoubleField
 from peewee import ForeignKeyField
 from peewee import Model
 from peewee import PrimaryKeyField
@@ -43,7 +46,8 @@ class User(BaseModel):
             'last_name': self.last_name,
             'telephone_number': self.telephone_number,
             'email': self.email,
-            'plates': [p.to_json() for p in self.plates]
+            'plates': [p.to_json() for p in self.plates],
+            'signaling_count': self.signalings.count(),
         }
 
 class LicensePlate(BaseModel):
@@ -62,8 +66,32 @@ class AuthToken(BaseModel):
     token = CharField()
     user_id = ForeignKeyField(User, unique=True, related_name='token')
 
+class Signaling(BaseModel):
+    id = PrimaryKeyField()
+    plate_number = CharField()
+    latitude = DoubleField(null=True)
+    longitude = DoubleField(null=True)
+    timestamp = DateTimeField(default=datetime.datetime.now)
+    user_id = ForeignKeyField(User, related_name='signalings')
+
+    def to_json(self):
+        return {
+            'plate_number': self.plate_number,
+            'latitude': self.latitude,
+            'longitude': self.longitude,
+            'timestamp': self.timestamp.isoformat(),
+            'user_id': self.user_id.id
+        }
+
+
 db.connect()
-db.create_tables([User, LicensePlate, AuthToken], safe=True)
+tables = [
+    AuthToken,
+    LicensePlate,
+    Signaling,
+    User,
+]
+db.create_tables(tables, safe=True)
 
 #
 # App init
@@ -154,6 +182,11 @@ def register_auth_token():
 def signal_license_plate():
     """Find the user that owns license plate, if any, then notify him."""
     plate_number = request.json['plate_number']
+
+    signaling = Signaling(plate_number=plate_number, user_id=session['user_id'],
+                          latitude=request.json.get('latitude'),
+                          longitude=request.json.get('longitude'))
+    signaling.save()
     try:
         plate = LicensePlate.get(number=plate_number)
         token = plate.user_id.token.get().token
@@ -165,7 +198,8 @@ def signal_license_plate():
         print(r)
     except DoesNotExist as e:
         pass
-    return ('', 204)
+
+    return jsonify(signaling.to_json())
 
 
 @app.route("/login", methods=['POST'])
