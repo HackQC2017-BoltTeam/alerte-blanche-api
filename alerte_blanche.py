@@ -84,11 +84,18 @@ def login_required(func):
         return func(*args, **kwargs)
     return inner
 
-def gcm_push(recipient, title, message):
+def gcm_push(recipient, title, message, action):
     if not GCM_API_KEY:
         return None
     headers = {'Authorization': 'key=' + GCM_API_KEY}
-    payload = {'to': recipient, 'data': {'title': title, 'message': message}}
+    payload = {
+        'to': recipient,
+        'data': {
+            'title': title,
+            'message': message,
+            'action': action,
+        },
+    }
     r = requests.post('https://gcm-http.googleapis.com/gcm/send',
                       headers=headers, json=payload)
     return r.json()
@@ -153,7 +160,8 @@ def signal_license_plate():
         r = gcm_push(recipient=token,
                  title="Attention! Remorquage imminent!",
                  message="Votre voiture a été repérée en zone de déneigement." +
-                         "Touchez pour afficher les stationnements les plus près.")
+                         "Touchez pour afficher les stationnements les plus près.",
+                 action="towing_alert")
         print(r)
     except DoesNotExist as e:
         pass
