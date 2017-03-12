@@ -94,7 +94,7 @@ def gcm_push(recipient, title, message):
     return r.json()
 
 def normalize_plate_number(plate_number):
-    return re.sub(r'[^a-zA-Z0-9]+', '', plate_number)
+    return re.sub(r'[^a-zA-Z0-9]+', '', plate_number).upper()
 
 
 @app.route("/version")
