@@ -190,7 +190,7 @@ def register_auth_token():
 @login_required
 def signal_license_plate():
     """Find the user that owns license plate, if any, then notify him."""
-    plate_number = request.json['plate_number']
+    plate_number = normalize_plate_number(request.json['plate_number'])
 
     signaling = Signaling(plate_number=plate_number, user_id=session['user_id'],
                           latitude=request.json.get('latitude'),
