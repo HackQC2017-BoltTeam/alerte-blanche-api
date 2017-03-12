@@ -70,6 +70,7 @@ app.secret_key = b'\xb5\xf2v\xba\x8d\x1b\x86\xabO\xc9\x8e\x1a<m\x17mC1\xf4<\x18\
 FLASK_DEBUG = os.environ.get('FLASK_DEBUG', False)
 GCM_API_KEY = os.environ.get('GCM_API_KEY', False)
 
+
 def login_required(func):
     @wraps(func)
     def inner(*args, **kwargs):
