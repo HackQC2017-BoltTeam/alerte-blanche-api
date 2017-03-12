@@ -112,20 +112,21 @@ def login_required(func):
         return func(*args, **kwargs)
     return inner
 
-def gcm_push(recipient, title, message, action):
+def gcm_push(recipient, title, message, action, payload):
     if not GCM_API_KEY:
         return None
     headers = {'Authorization': 'key=' + GCM_API_KEY}
-    payload = {
+    gcm_payload = {
         'to': recipient,
         'data': {
             'title': title,
             'message': message,
             'action': action,
+            'payload': payload,
         },
     }
     r = requests.post('https://gcm-http.googleapis.com/gcm/send',
-                      headers=headers, json=payload)
+                      headers=headers, json=gcm_payload)
     return r.json()
 
 def normalize_plate_number(plate_number):
@@ -195,6 +196,7 @@ def signal_license_plate():
                           latitude=request.json.get('latitude'),
                           longitude=request.json.get('longitude'))
     signaling.save()
+    payload = signaling.to_json()
     try:
         plate = LicensePlate.get(number=plate_number)
         token = plate.user_id.token.get().token
@@ -202,12 +204,13 @@ def signal_license_plate():
                  title="Attention! Remorquage imminent!",
                  message="Votre voiture a été repérée en zone de déneigement." +
                          "Touchez pour afficher les stationnements les plus près.",
-                 action="towing_alert")
+                 action="towing_alert",
+                 payload=payload)
         print(r)
     except DoesNotExist as e:
         pass
 
-    return jsonify(signaling.to_json())
+    return jsonify(payload)
 
 
 @app.route("/login", methods=['POST'])
