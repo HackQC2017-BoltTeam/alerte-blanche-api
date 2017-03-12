@@ -62,6 +62,16 @@ curl -X POST \
      http://localhost:5000/license-plates
 ```
 
+`/users/me/token` registers a device token for the authenticated user:
+
+```bash
+curl -X PUT \
+     -H 'Cookies: {{A valid session cookie}}' \
+     -H 'Content-Type: application/json' \
+     -d '{ "token": "thisismytokenandimproudofit"}' \
+     http://localhost:5000/users/me/token
+```
+
 `/login` creates a user session, and returns the user:
 
 ```bash
