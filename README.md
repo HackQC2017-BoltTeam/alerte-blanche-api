@@ -71,6 +71,14 @@ curl -X POST \
      http://localhost:5000/license-plates
 ```
 
+
+`/users/me` gets the authenticated user's profile:
+
+```bash
+curl -H 'Cookies: {{A valid session cookie}}' \
+     http://localhost:5000/users/me
+```
+
 `/users/me/token` registers a device token for the authenticated user:
 
 ```bash
