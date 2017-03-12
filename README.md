@@ -15,6 +15,7 @@ docker build -t alerte-blanche-api .
 ```bash
 docker run -d \
     -v ~/alerte-blanche/alerte-blanche.db:/usr/src/app/alerte_blanche.db \
+    --env-file gcm_key.env \
     -p 8080:5000 \
     --name alerte-blanche \
     alerte-blanche-api
